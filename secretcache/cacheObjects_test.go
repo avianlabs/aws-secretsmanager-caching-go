@@ -14,14 +14,12 @@
 package secretcache
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-sdk-go/service/secretsmanager"
-	"github.com/aws/aws-sdk-go/service/secretsmanager/secretsmanageriface"
+	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 )
 
 func TestIsRefreshNeededBase(t *testing.T) {
@@ -91,10 +89,10 @@ func TestMaxCacheTTL(t *testing.T) {
 }
 
 type dummyClient struct {
-	secretsmanageriface.SecretsManagerAPI
+	SecretsManagerClient
 }
 
-func (d *dummyClient) DescribeSecretWithContext(context aws.Context, input *secretsmanager.DescribeSecretInput, opts ...request.Option) (*secretsmanager.DescribeSecretOutput, error) {
+func (d *dummyClient) DescribeSecret(ctx context.Context, input *secretsmanager.DescribeSecretInput, opts ...func(*secretsmanager.Options)) (*secretsmanager.DescribeSecretOutput, error) {
 	return &secretsmanager.DescribeSecretOutput{}, nil
 }
 

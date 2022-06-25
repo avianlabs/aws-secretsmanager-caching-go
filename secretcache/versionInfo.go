@@ -15,6 +15,11 @@
 // Also exports a CacheHook, for pre-store and post-fetch processing of cached values
 package secretcache
 
+import (
+	"github.com/aws/aws-sdk-go-v2/aws/middleware"
+	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
+)
+
 const (
 	VersionNumber        = "1"
 	MajorRevisionNumber  = "1"
@@ -28,6 +33,6 @@ func releaseVersion() string {
 }
 
 // userAgent builds the user agent string to be appended to outgoing requests to the secrets manager API
-func userAgent() string {
-	return "AwsSecretCache/" + releaseVersion()
+func addUserAgent(opt *secretsmanager.Options) {
+	opt.APIOptions = append(opt.APIOptions, middleware.AddUserAgentKeyValue("AwsSecretCache", releaseVersion()))
 }
