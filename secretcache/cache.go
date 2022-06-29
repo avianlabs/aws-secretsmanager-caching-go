@@ -16,16 +16,22 @@
 package secretcache
 
 import (
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/secretsmanager"
-	"github.com/aws/aws-sdk-go/service/secretsmanager/secretsmanageriface"
+	"context"
+
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 )
+
+type SecretsManagerClient interface {
+	DescribeSecret(context.Context, *secretsmanager.DescribeSecretInput, ...func(*secretsmanager.Options)) (*secretsmanager.DescribeSecretOutput, error)
+	GetSecretValue(context.Context, *secretsmanager.GetSecretValueInput, ...func(*secretsmanager.Options)) (*secretsmanager.GetSecretValueOutput, error)
+}
 
 // Cache client for AWS Secrets Manager secrets.
 type Cache struct {
 	lru *lruCache
 	CacheConfig
-	Client secretsmanageriface.SecretsManagerAPI
+	Client SecretsManagerClient
 }
 
 // New constructs a secret cache using functional options, uses defaults otherwise.
@@ -54,12 +60,12 @@ func New(optFns ...func(*Cache)) (*Cache, error) {
 
 	//Initialise the secrets manager client
 	if cache.Client == nil {
-		sess, err := session.NewSession()
+		cfg, err := config.LoadDefaultConfig(context.Background())
 		if err != nil {
 			return nil, err
 		}
 
-		cache.Client = secretsmanager.New(sess)
+		cache.Client = secretsmanager.NewFromConfig(cfg)
 	}
 
 	return cache, nil
