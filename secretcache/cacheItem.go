@@ -78,12 +78,12 @@ func (ci *secretCacheItem) getVersionId(versionStage string) (string, bool) {
 
 // executeRefresh performs the actual refresh of the cached secret information.
 // Returns the DescribeSecret API result and an error if call failed.
-func (ci *secretCacheItem) executeRefresh() (*secretsmanager.DescribeSecretOutput, error) {
+func (ci *secretCacheItem) executeRefresh(ctx context.Context) (*secretsmanager.DescribeSecretOutput, error) {
 	input := &secretsmanager.DescribeSecretInput{
 		SecretId: &ci.secretId,
 	}
 
-	result, err := ci.client.DescribeSecret(context.Background(), input, addUserAgent)
+	result, err := ci.client.DescribeSecret(ctx, input, addUserAgent)
 
 	var maxTTL int64
 	if ci.config.CacheItemTTL == 0 {
@@ -130,14 +130,14 @@ func (ci *secretCacheItem) getVersion(versionStage string) (*cacheVersion, bool)
 }
 
 // refresh the cached object when needed.
-func (ci *secretCacheItem) refresh() {
+func (ci *secretCacheItem) refresh(ctx context.Context) {
 	if !ci.isRefreshNeeded() {
 		return
 	}
 
 	ci.refreshNeeded = false
 
-	result, err := ci.executeRefresh()
+	result, err := ci.executeRefresh(ctx)
 
 	if err != nil {
 		ci.errorCount++
@@ -156,7 +156,7 @@ func (ci *secretCacheItem) refresh() {
 
 // getSecretValue gets the cached secret value for the given version stage.
 // Returns the GetSecretValue API result and an error if operation fails.
-func (ci *secretCacheItem) getSecretValue(versionStage string) (*secretsmanager.GetSecretValueOutput, error) {
+func (ci *secretCacheItem) getSecretValue(ctx context.Context, versionStage string) (*secretsmanager.GetSecretValueOutput, error) {
 	if versionStage == "" && ci.config.VersionStage == "" {
 		versionStage = DefaultVersionStage
 	} else if versionStage == "" && ci.config.VersionStage != "" {
@@ -166,7 +166,7 @@ func (ci *secretCacheItem) getSecretValue(versionStage string) (*secretsmanager.
 	ci.mux.Lock()
 	defer ci.mux.Unlock()
 
-	ci.refresh()
+	ci.refresh(ctx)
 	version, ok := ci.getVersion(versionStage)
 
 	if !ok {
@@ -181,7 +181,7 @@ func (ci *secretCacheItem) getSecretValue(versionStage string) (*secretsmanager.
 		}
 
 	}
-	return version.getSecretValue()
+	return version.getSecretValue(ctx)
 }
 
 // setWithHook sets the cache item's data using the CacheHook, if one is configured.

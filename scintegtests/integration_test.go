@@ -160,7 +160,7 @@ func integTest_getSecretBinary(t *testing.T, api *secretsmanager.Client) string 
 		return ""
 	}
 
-	resultBinary, err := cache.GetSecretBinary(*createResult.ARN)
+	resultBinary, err := cache.GetSecretBinary(context.Background(), *createResult.ARN)
 
 	if err != nil {
 		t.Error(err)
@@ -200,7 +200,7 @@ func integTest_getSecretBinaryWithStage(t *testing.T, api *secretsmanager.Client
 		return *createResult.ARN
 	}
 
-	resultBinary, err := cache.GetSecretBinaryWithStage(*createResult.ARN, "AWSPREVIOUS")
+	resultBinary, err := cache.GetSecretBinaryWithStage(context.Background(), *createResult.ARN, "AWSPREVIOUS")
 
 	if err != nil {
 		t.Error(err)
@@ -211,7 +211,7 @@ func integTest_getSecretBinaryWithStage(t *testing.T, api *secretsmanager.Client
 		t.Error("Expected and result binary not the same")
 	}
 
-	resultBinary, err = cache.GetSecretBinaryWithStage(*createResult.ARN, "AWSCURRENT")
+	resultBinary, err = cache.GetSecretBinaryWithStage(context.Background(), *createResult.ARN, "AWSCURRENT")
 
 	if err != nil {
 		t.Error(err)
@@ -237,7 +237,7 @@ func integTest_getSecretString(t *testing.T, api *secretsmanager.Client) string 
 		return ""
 	}
 
-	resultString, err := cache.GetSecretString(*createResult.ARN)
+	resultString, err := cache.GetSecretString(context.Background(), *createResult.ARN)
 
 	if err != nil {
 		t.Error(err)
@@ -277,7 +277,7 @@ func integTest_getSecretStringWithStage(t *testing.T, api *secretsmanager.Client
 		return *createResult.ARN
 	}
 
-	resultString, err := cache.GetSecretStringWithStage(*createResult.ARN, "AWSPREVIOUS")
+	resultString, err := cache.GetSecretStringWithStage(context.Background(), *createResult.ARN, "AWSPREVIOUS")
 
 	if err != nil {
 		t.Error(err)
@@ -288,7 +288,7 @@ func integTest_getSecretStringWithStage(t *testing.T, api *secretsmanager.Client
 		t.Errorf("Expected and result secret string are different - \"%s\", \"%s\"", secretString, resultString)
 	}
 
-	resultString, err = cache.GetSecretStringWithStage(*createResult.ARN, "AWSCURRENT")
+	resultString, err = cache.GetSecretStringWithStage(context.Background(), *createResult.ARN, "AWSCURRENT")
 
 	if err != nil {
 		t.Error(err)
@@ -317,7 +317,7 @@ func integTest_getSecretStringWithTTL(t *testing.T, api *secretsmanager.Client) 
 		return ""
 	}
 
-	resultString, err := cache.GetSecretString(*createResult.ARN)
+	resultString, err := cache.GetSecretString(context.Background(), *createResult.ARN)
 
 	if err != nil {
 		t.Error(err)
@@ -342,7 +342,7 @@ func integTest_getSecretStringWithTTL(t *testing.T, api *secretsmanager.Client) 
 		return *createResult.ARN
 	}
 
-	resultString, err = cache.GetSecretString(*createResult.ARN)
+	resultString, err = cache.GetSecretString(context.Background(), *createResult.ARN)
 
 	if err != nil {
 		t.Error(err)
@@ -356,7 +356,7 @@ func integTest_getSecretStringWithTTL(t *testing.T, api *secretsmanager.Client) 
 
 	time.Sleep(time.Nanosecond * time.Duration(ttlNanoSeconds))
 
-	resultString, err = cache.GetSecretString(*createResult.ARN)
+	resultString, err = cache.GetSecretString(context.Background(), *createResult.ARN)
 	if updatedSecretString != resultString {
 		t.Errorf("Expected cached secret to be same as updated version - \"%s\", \"%s\"", resultString, updatedSecretString)
 		return *createResult.ARN
@@ -371,7 +371,7 @@ func integTest_getSecretStringNoSecret(t *testing.T, api *secretsmanager.Client)
 	)
 
 	secretName := "NoSuchSecret"
-	_, err := cache.GetSecretString(secretName)
+	_, err := cache.GetSecretString(context.Background(), secretName)
 
 	var rnfe *types.ResourceNotFoundException
 

@@ -43,14 +43,14 @@ func (cv *cacheVersion) isRefreshNeeded() bool {
 }
 
 // refresh the cached object when needed.
-func (cv *cacheVersion) refresh() {
+func (cv *cacheVersion) refresh(ctx context.Context) {
 	if !cv.isRefreshNeeded() {
 		return
 	}
 
 	cv.refreshNeeded = false
 
-	result, err := cv.executeRefresh()
+	result, err := cv.executeRefresh(ctx)
 
 	if err != nil {
 		cv.errorCount++
@@ -70,21 +70,21 @@ func (cv *cacheVersion) refresh() {
 
 // executeRefresh performs the actual refresh of the cached secret information.
 // Returns the GetSecretValue API result and an error if operation fails.
-func (cv *cacheVersion) executeRefresh() (*secretsmanager.GetSecretValueOutput, error) {
+func (cv *cacheVersion) executeRefresh(ctx context.Context) (*secretsmanager.GetSecretValueOutput, error) {
 	input := &secretsmanager.GetSecretValueInput{
 		SecretId:  &cv.secretId,
 		VersionId: &cv.versionId,
 	}
-	return cv.client.GetSecretValue(context.Background(), input, addUserAgent)
+	return cv.client.GetSecretValue(ctx, input, addUserAgent)
 }
 
 // getSecretValue gets the cached secret version value.
 // Returns the GetSecretValue API cached result and an error if operation fails.
-func (cv *cacheVersion) getSecretValue() (*secretsmanager.GetSecretValueOutput, error) {
+func (cv *cacheVersion) getSecretValue(ctx context.Context) (*secretsmanager.GetSecretValueOutput, error) {
 	cv.mux.Lock()
 	defer cv.mux.Unlock()
 
-	cv.refresh()
+	cv.refresh(ctx)
 
 	return cv.getWithHook(), cv.err
 }
