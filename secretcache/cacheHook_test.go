@@ -15,6 +15,7 @@ package secretcache_test
 
 import (
 	"bytes"
+	"context"
 	"testing"
 
 	"github.com/aws/aws-secretsmanager-caching-go/v2/secretcache"
@@ -44,7 +45,7 @@ func TestCacheHookString(t *testing.T) {
 		func(c *secretcache.Cache) { c.CacheConfig.Hook = hook },
 	)
 
-	result, err := secretCache.GetSecretString(secretId)
+	result, err := secretCache.GetSecretString(context.Background(), secretId)
 
 	if err != nil {
 		t.Fatalf("Unexpected error - %s", err.Error())
@@ -75,7 +76,7 @@ func TestCacheHookBinary(t *testing.T) {
 		func(c *secretcache.Cache) { c.CacheConfig.Hook = hook },
 	)
 
-	result, err := secretCache.GetSecretBinary(secretId)
+	result, err := secretCache.GetSecretBinary(context.Background(), secretId)
 
 	if err != nil {
 		t.Fatalf("Unexpected error - %s", err.Error())

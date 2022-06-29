@@ -15,6 +15,7 @@ package secretcache_test
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"testing"
 
@@ -36,7 +37,7 @@ func TestGetSecretString(t *testing.T) {
 	secretCache, _ := secretcache.New(
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
-	result, err := secretCache.GetSecretString("test")
+	result, err := secretCache.GetSecretString(context.Background(), "test")
 
 	if err != nil {
 		t.Fatalf("Unexpected error - %s", err.Error())
@@ -55,7 +56,7 @@ func TestGetSecretBinary(t *testing.T) {
 	secretCache, _ := secretcache.New(
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
-	result, err := secretCache.GetSecretBinary("test")
+	result, err := secretCache.GetSecretBinary(context.Background(), "test")
 
 	if err != nil {
 		t.Fatalf("Unexpected error - %s", err.Error())
@@ -79,13 +80,13 @@ func TestGetSecretMissing(t *testing.T) {
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
-	_, err := secretCache.GetSecretString("test")
+	_, err := secretCache.GetSecretString(context.Background(), "test")
 
 	if err == nil {
 		t.Fatalf("Expected to not find a SecretString in this version")
 	}
 
-	_, err = secretCache.GetSecretBinary("test")
+	_, err = secretCache.GetSecretBinary(context.Background(), "test")
 
 	if err == nil {
 		t.Fatalf("Expected to not find a SecretString in this version")
@@ -109,7 +110,7 @@ func TestGetSecretNoCurrent(t *testing.T) {
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
-	_, err := secretCache.GetSecretString("test")
+	_, err := secretCache.GetSecretString(context.Background(), "test")
 
 	if err == nil {
 		t.Fatalf("Expected to not find secret version")
@@ -118,7 +119,7 @@ func TestGetSecretNoCurrent(t *testing.T) {
 	mockClient.MockedGetResult.SecretString = nil
 	mockClient.MockedGetResult.SecretBinary = []byte{0, 1, 0, 1, 0, 1, 0, 1}
 
-	_, err = secretCache.GetSecretBinary("test")
+	_, err = secretCache.GetSecretBinary(context.Background(), "test")
 
 	if err == nil {
 		t.Fatalf("Expected to not find secret version")
@@ -135,13 +136,13 @@ func TestGetSecretVersionNotFound(t *testing.T) {
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
-	_, err := secretCache.GetSecretString(secretId)
+	_, err := secretCache.GetSecretString(context.Background(), secretId)
 
 	if err == nil {
 		t.Fatalf("Expected to not find secret version")
 	}
 
-	_, err = secretCache.GetSecretBinary(secretId)
+	_, err = secretCache.GetSecretBinary(context.Background(), secretId)
 
 	if err == nil {
 		t.Fatalf("Expected to not find secret version")
@@ -158,13 +159,13 @@ func TestGetSecretNoVersions(t *testing.T) {
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
-	_, err := secretCache.GetSecretString(secretId)
+	_, err := secretCache.GetSecretString(context.Background(), secretId)
 
 	if err == nil {
 		t.Fatalf("Expected to not find secret version")
 	}
 
-	_, err = secretCache.GetSecretBinary(secretId)
+	_, err = secretCache.GetSecretBinary(context.Background(), secretId)
 
 	if err == nil {
 		t.Fatalf("Expected to not find secret version")
@@ -178,7 +179,7 @@ func TestGetSecretStringMultipleTimes(t *testing.T) {
 	)
 
 	for i := 0; i < 100; i++ {
-		result, err := secretCache.GetSecretString(secretId)
+		result, err := secretCache.GetSecretString(context.Background(), secretId)
 		if err != nil {
 			t.Fatalf("Unexpected error - %s", err.Error())
 		}
@@ -208,7 +209,7 @@ func TestGetSecretBinaryMultipleTimes(t *testing.T) {
 	)
 
 	for i := 0; i < 100; i++ {
-		result, err := secretCache.GetSecretBinary(secretId)
+		result, err := secretCache.GetSecretBinary(context.Background(), secretId)
 		if err != nil {
 			t.Fatalf("Unexpected error - %s", err.Error())
 		}
@@ -236,7 +237,7 @@ func TestGetSecretStringRefresh(t *testing.T) {
 	)
 
 	for i := 0; i < 10; i++ {
-		result, err := secretCache.GetSecretString(secretId)
+		result, err := secretCache.GetSecretString(context.Background(), secretId)
 		if err != nil {
 			t.Fatalf("Unexpected error - %s", err.Error())
 		}
@@ -259,7 +260,7 @@ func TestGetSecretBinaryRefresh(t *testing.T) {
 	)
 
 	for i := 0; i < 10; i++ {
-		result, err := secretCache.GetSecretBinary(secretId)
+		result, err := secretCache.GetSecretBinary(context.Background(), secretId)
 		if err != nil {
 			t.Fatalf("Unexpected error - %s", err.Error())
 		}
@@ -278,7 +279,7 @@ func TestGetSecretStringWithStage(t *testing.T) {
 	)
 
 	for i := 0; i < 10; i++ {
-		result, err := secretCache.GetSecretStringWithStage(secretId, "versionStage-42")
+		result, err := secretCache.GetSecretStringWithStage(context.Background(), secretId, "versionStage-42")
 		if err != nil {
 			t.Fatalf("Unexpected error - %s", err.Error())
 		}
@@ -300,7 +301,7 @@ func TestGetSecretBinaryWithStage(t *testing.T) {
 	)
 
 	for i := 0; i < 10; i++ {
-		result, err := secretCache.GetSecretBinaryWithStage(secretId, "versionStage-42")
+		result, err := secretCache.GetSecretBinaryWithStage(context.Background(), secretId, "versionStage-42")
 		if err != nil {
 			t.Fatalf("Unexpected error - %s", err.Error())
 		}
@@ -322,7 +323,7 @@ func TestGetSecretStringMultipleNotFound(t *testing.T) {
 	)
 
 	for i := 0; i < 100; i++ {
-		_, err := secretCache.GetSecretStringWithStage("test", "versionStage-42")
+		_, err := secretCache.GetSecretStringWithStage(context.Background(), "test", "versionStage-42")
 
 		if err == nil {
 			t.Fatalf("Expected error: secretNotFound for a missing secret")
@@ -345,7 +346,7 @@ func TestGetSecretBinaryMultipleNotFound(t *testing.T) {
 	)
 
 	for i := 0; i < 100; i++ {
-		_, err := secretCache.GetSecretBinaryWithStage("test", "versionStage-42")
+		_, err := secretCache.GetSecretBinaryWithStage(context.Background(), "test", "versionStage-42")
 
 		if err == nil {
 			t.Fatalf("Expected error: secretNotFound for a missing secret")
@@ -364,7 +365,7 @@ func TestGetSecretVersionStageEmpty(t *testing.T) {
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
-	result, err := secretCache.GetSecretStringWithStage("test", "")
+	result, err := secretCache.GetSecretStringWithStage(context.Background(), "test", "")
 
 	if err != nil {
 		t.Fatalf("Unexpected error - %s", err.Error())
@@ -380,7 +381,7 @@ func TestGetSecretVersionStageEmpty(t *testing.T) {
 		func(c *secretcache.Cache) { c.CacheConfig.VersionStage = "" },
 	)
 
-	result, err = secretCache.GetSecretStringWithStage("test", "")
+	result, err = secretCache.GetSecretStringWithStage(context.Background(), "test", "")
 
 	if err != nil {
 		t.Fatalf("Unexpected error - %s", err.Error())
