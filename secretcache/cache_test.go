@@ -19,7 +19,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/aws/aws-secretsmanager-caching-go/v2/secretcache"
+	"github.com/avianlabs/aws-secretsmanager-caching-go/v2/secretcache"
 
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 )

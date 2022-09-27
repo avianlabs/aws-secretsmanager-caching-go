@@ -1,14 +1,14 @@
-module github.com/aws/aws-secretsmanager-caching-go/v2
+module github.com/avianlabs/aws-secretsmanager-caching-go/v2
 
 go 1.18
 
 require (
+	github.com/aws/aws-sdk-go-v2 v1.16.5
 	github.com/aws/aws-sdk-go-v2/config v1.15.11
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.15.11
 )
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.16.5 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.12.6 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.6 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.12 // indirect

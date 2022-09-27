@@ -18,7 +18,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aws/aws-secretsmanager-caching-go/v2/secretcache"
+	"github.com/avianlabs/aws-secretsmanager-caching-go/v2/secretcache"
 )
 
 type DummyCacheHook struct {

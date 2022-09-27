@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/avianlabs/aws-secretsmanager-caching-go/v2/secretcache"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager/types"
-	"github.com/aws/aws-secretsmanager-caching-go/v2/secretcache"
 )
 
 var (
