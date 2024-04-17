@@ -120,7 +120,7 @@ func performDelete(secretNames *[]string, secretsManagerClient *secretsmanager.C
 		time.Sleep(time.Second / 2)
 		_, _ = secretsManagerClient.DeleteSecret(context.Background(), &secretsmanager.DeleteSecretInput{
 			SecretId:                   &secretName,
-			ForceDeleteWithoutRecovery: forceDelete,
+			ForceDeleteWithoutRecovery: &forceDelete,
 		})
 	}
 }
