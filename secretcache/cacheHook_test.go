@@ -41,6 +41,7 @@ func TestCacheHookString(t *testing.T) {
 	hook := &DummyCacheHook{}
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 		func(c *secretcache.Cache) { c.CacheConfig.Hook = hook },
 	)
@@ -72,6 +73,7 @@ func TestCacheHookBinary(t *testing.T) {
 	hook := &DummyCacheHook{}
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 		func(c *secretcache.Cache) { c.CacheConfig.Hook = hook },
 	)

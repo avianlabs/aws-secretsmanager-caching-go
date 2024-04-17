@@ -34,14 +34,23 @@ type Cache struct {
 	Client SecretsManagerClient
 }
 
+type CacheOptionFunc func(*Cache)
+
+// WithAWSOptions allows the user to specify AWS SDK options to pass to the AWS SDK client when creating the client.
+func WithAWSOptions(opts ...func(*config.LoadOptions) error) CacheOptionFunc {
+	return func(c *Cache) {
+		c.AwsOpts = opts
+	}
+}
+
 // New constructs a secret cache using functional options, uses defaults otherwise.
 // Initialises a SecretsManager Client from a new session.Session.
 // Initialises CacheConfig to default values.
 // Initialises lru cache with a default max size.
-func New(optFns ...func(*Cache)) (*Cache, error) {
+func New(ctx context.Context, optFns ...CacheOptionFunc) (*Cache, error) {
 
 	cache := &Cache{
-		//Initialise default configuration
+		// Initialise default configuration
 		CacheConfig: CacheConfig{
 			MaxCacheSize: DefaultMaxCacheSize,
 			VersionStage: DefaultVersionStage,
@@ -55,12 +64,13 @@ func New(optFns ...func(*Cache)) (*Cache, error) {
 		optFn(cache)
 	}
 
-	//Initialise lru cache
+	// Initialise lru cache
 	cache.lru = newLRUCache(cache.MaxCacheSize)
 
-	//Initialise the secrets manager client
+	// Initialise the secrets manager client
 	if cache.Client == nil {
-		cfg, err := config.LoadDefaultConfig(context.Background())
+
+		cfg, err := config.LoadDefaultConfig(ctx, cache.AwsOpts...)
 		if err != nil {
 			return nil, err
 		}

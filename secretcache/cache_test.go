@@ -25,7 +25,7 @@ import (
 )
 
 func TestInstantiatesClient(t *testing.T) {
-	secretCache, err := secretcache.New()
+	secretCache, err := secretcache.New(context.Background())
 
 	if err != nil || secretCache.Client == nil {
 		t.Fatalf("Failed to instantiate default Client")
@@ -35,6 +35,7 @@ func TestInstantiatesClient(t *testing.T) {
 func TestGetSecretString(t *testing.T) {
 	mockClient, _, secretString := newMockedClientWithDummyResults()
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 	result, err := secretCache.GetSecretString(context.Background(), "test")
@@ -54,6 +55,7 @@ func TestGetSecretBinary(t *testing.T) {
 	mockClient.MockedGetResult.SecretString = nil
 	mockClient.MockedGetResult.SecretBinary = secretBinary
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 	result, err := secretCache.GetSecretBinary(context.Background(), "test")
@@ -77,6 +79,7 @@ func TestGetSecretMissing(t *testing.T) {
 	}
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
@@ -107,6 +110,7 @@ func TestGetSecretNoCurrent(t *testing.T) {
 	}
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
@@ -133,6 +137,7 @@ func TestGetSecretVersionNotFound(t *testing.T) {
 	mockClient.GetSecretValueErr = errors.New("resourceNotFound")
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
@@ -156,6 +161,7 @@ func TestGetSecretNoVersions(t *testing.T) {
 	mockClient.MockedDescribeResult.VersionIdsToStages = nil
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
@@ -175,6 +181,7 @@ func TestGetSecretNoVersions(t *testing.T) {
 func TestGetSecretStringMultipleTimes(t *testing.T) {
 	mockClient, secretId, secretString := newMockedClientWithDummyResults()
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
@@ -205,6 +212,7 @@ func TestGetSecretBinaryMultipleTimes(t *testing.T) {
 	mockClient.MockedGetResult.SecretString = nil
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
@@ -232,6 +240,7 @@ func TestGetSecretStringRefresh(t *testing.T) {
 	mockClient, secretId, secretString := newMockedClientWithDummyResults()
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 		func(c *secretcache.Cache) { c.CacheConfig.CacheItemTTL = 1 },
 	)
@@ -255,6 +264,7 @@ func TestGetSecretBinaryRefresh(t *testing.T) {
 	mockClient.MockedGetResult.SecretBinary = secretBinary
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 		func(c *secretcache.Cache) { c.CacheConfig.CacheItemTTL = 1 },
 	)
@@ -275,6 +285,7 @@ func TestGetSecretStringWithStage(t *testing.T) {
 	mockClient, secretId, secretString := newMockedClientWithDummyResults()
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
@@ -297,6 +308,7 @@ func TestGetSecretBinaryWithStage(t *testing.T) {
 	mockClient.MockedGetResult.SecretBinary = secretBinary
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
@@ -319,6 +331,7 @@ func TestGetSecretStringMultipleNotFound(t *testing.T) {
 	}
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
@@ -342,6 +355,7 @@ func TestGetSecretBinaryMultipleNotFound(t *testing.T) {
 	}
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
@@ -362,6 +376,7 @@ func TestGetSecretVersionStageEmpty(t *testing.T) {
 	mockClient, _, secretString := newMockedClientWithDummyResults()
 
 	secretCache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 	)
 
@@ -375,8 +390,9 @@ func TestGetSecretVersionStageEmpty(t *testing.T) {
 		t.Fatalf("Expected and result secret string are different - \"%s\", \"%s\"", secretString, result)
 	}
 
-	//New cache for new config
+	// New cache for new config
 	secretCache, _ = secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = &mockClient },
 		func(c *secretcache.Cache) { c.CacheConfig.VersionStage = "" },
 	)

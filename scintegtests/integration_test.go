@@ -149,6 +149,7 @@ func TestIntegration(t *testing.T) {
 
 func integTest_getSecretBinary(t *testing.T, api *secretsmanager.Client) string {
 	cache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = api },
 	)
 
@@ -176,6 +177,7 @@ func integTest_getSecretBinary(t *testing.T, api *secretsmanager.Client) string 
 
 func integTest_getSecretBinaryWithStage(t *testing.T, api *secretsmanager.Client) string {
 	cache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = api },
 	)
 
@@ -227,6 +229,7 @@ func integTest_getSecretBinaryWithStage(t *testing.T, api *secretsmanager.Client
 
 func integTest_getSecretString(t *testing.T, api *secretsmanager.Client) string {
 	cache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = api },
 	)
 	secretString := "This is a secret"
@@ -253,6 +256,7 @@ func integTest_getSecretString(t *testing.T, api *secretsmanager.Client) string 
 
 func integTest_getSecretStringWithStage(t *testing.T, api *secretsmanager.Client) string {
 	cache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = api },
 	)
 
@@ -305,6 +309,7 @@ func integTest_getSecretStringWithStage(t *testing.T, api *secretsmanager.Client
 func integTest_getSecretStringWithTTL(t *testing.T, api *secretsmanager.Client) string {
 	ttlNanoSeconds := (time.Second * 2).Nanoseconds()
 	cache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = api },
 		func(c *secretcache.Cache) { c.CacheItemTTL = ttlNanoSeconds },
 	)
@@ -367,6 +372,7 @@ func integTest_getSecretStringWithTTL(t *testing.T, api *secretsmanager.Client) 
 
 func integTest_getSecretStringNoSecret(t *testing.T, api *secretsmanager.Client) string {
 	cache, _ := secretcache.New(
+		context.Background(),
 		func(c *secretcache.Cache) { c.Client = api },
 	)
 
